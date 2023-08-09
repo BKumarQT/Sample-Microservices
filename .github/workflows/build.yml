@@ -70,8 +70,15 @@ jobs:
         # Runs Snyk Open Source (SCA) analysis and uploads result to Snyk.
       - name: Snyk Open Source monitor
         run: |
-          # snyk auth
-          snyk monitor --all-projects
+          for microservice in lattice_north_to_qcl lattice_qcl_handler lattice_qcl_to_north lattice_qcl_to_south lattice_south_to_qcl
+          do
+            cd $microservice
+            snyk monitor --all-projects
+            cd ..
+          done  
+        
+        # snyk auth
+        #  snyk monitor --all-projects
 
         env:
           # This is where you will need to introduce the Snyk API token created with your Snyk account
