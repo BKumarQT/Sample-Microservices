@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          repository: BKumarQT/QtTest
+          repository: BKumarQT/Sample-Microservices
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: Set up Python
