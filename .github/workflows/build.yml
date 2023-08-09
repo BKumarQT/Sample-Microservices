@@ -73,7 +73,7 @@ jobs:
           for microservice in lattice_north_to_qcl lattice_qcl_handler lattice_qcl_to_north lattice_qcl_to_south lattice_south_to_qcl
           do
             cd $microservice
-            pip install -r requirements.txt
+            pip install --verbose --no-fail-fast -r requirements.txt
             snyk monitor 
             cd ..
           done  
