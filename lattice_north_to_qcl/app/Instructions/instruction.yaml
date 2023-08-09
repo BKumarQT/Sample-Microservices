@@ -1,0 +1,9 @@
+INIT:
+  north_details:
+    north_id: ONS
+    base_url: https://8147918.suitetalk.api.netsuite.com
+    auth_type: OAUTH2
+REDIS:
+  ORGANISATION: Vidatt
+  NORTH:
+    - ONS

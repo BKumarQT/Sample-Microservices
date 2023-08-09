@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  api-server-5:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8005:8005"
+    depends_on:
+      - redis
+      - mongodb
+    networks:
+      - lattice-network-5
+
+  redis:
+    image: redis:latest
+    ports:
+       - "6005:6005"
+    networks:
+      - lattice-network-5
+
+  mongodb:
+    image: mongo:latest
+    ports:
+       - "27005:27005"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    volumes:
+      - .\mongodb5_data:/data/db5
+    networks:
+      - lattice-network-5
+
+networks:
+  lattice-network-5:
+    driver: bridge
+
+volumes:
+  mongodb5_data:

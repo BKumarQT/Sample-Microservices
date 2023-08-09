@@ -1,0 +1,19 @@
+[flake8]
+# Set maximum line length to 100 characters
+max-line-length = 100
+
+# Ignore specific errors or warnings
+ignore = E501,F541,E722,W605,BLK100,E203,W503,F401,F841   
+
+# Exclude specific directories or files from linting
+exclude =
+    .git,
+    __pycache__,
+    venv,
+    .venv
+
+# Enable or disable specific checks (plugins)
+# For example, to disable the 'flake8-import-order' plugin:
+# no-import-order = true
+
+# Add more options and rules as per your project's requirements

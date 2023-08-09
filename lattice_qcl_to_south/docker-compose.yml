@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  api-server-4:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8004:8004"
+    depends_on:
+      - redis
+      - mongodb
+    networks:
+      - lattice-network-4
+
+  redis:
+    image: redis:latest
+    ports:
+       - "6004:6004"
+    networks:
+      - lattice-network-4
+
+  mongodb:
+    image: mongo:latest
+    ports:
+       - "27004:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    volumes:
+      - .\mongodb4_data:/data/db4
+    networks:
+      - lattice-network-4
+
+networks:
+  lattice-network-4:
+    driver: bridge
+
+volumes:
+  mongodb4_data:

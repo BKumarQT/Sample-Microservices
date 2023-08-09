@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  api-server-2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    depends_on:
+      - redis
+      - mongodb
+    networks:
+      - lattice-network-2
+
+  redis:
+    image: redis:latest
+    ports:
+       - "6002:6002"
+    networks:
+      - lattice-network-2
+
+  mongodb:
+    image: mongo:latest
+    ports:
+       - "27002:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    volumes:
+      - .\mongodb2_data:/data/db2
+    networks:
+      - lattice-network-2
+
+networks:
+  lattice-network-2:
+    driver: bridge
+
+volumes:
+  mongodb2_data:

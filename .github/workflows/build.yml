@@ -1,0 +1,144 @@
+name: Fetch Code from Private Repo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  fetch-code:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          repository: BKumarQT/QtTest
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+  
+      - name: Install dependencies for Microservices
+        run: |
+              for microservice in lattice_north_to_qcl lattice_qcl_handler lattice_qcl_to_north lattice_qcl_to_south lattice_south_to_qcl
+              do
+                cd $microservice
+                pip install -r requirements.txt
+                cd ..
+              done
+  
+      - name: Linting & Formatting
+        run: |
+          pip install black flake8
+          black .
+          flake8
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+  
+      - name: Authenticate Snyk
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+  
+      - uses: actions/checkout@master
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/python-3.8@master
+        continue-on-error: true # To make sure that SARIF upload gets called
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --sarif-file-output=snyk.sarif
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: snyk.sarif
+
+      #- name: Iterate over microservices and run Snyk
+       # run: |
+        #  for microservice in lattice_north_to_qcl lattice_qcl_handler lattice_qcl_to_north lattice_qcl_to_south lattice_south_to_qcl; do
+         #   if [ -d "$microservice" ]; then
+          #   snyk test --all-projects --sarif-file-output=snyk-${microservice}.sarif || true
+           #   #snyk_to_json=$(snyk-to-json -i snyk-${microservice}.sarif)
+              #jq --argjson input "$snyk_to_json" '. += $input' snyk_issues.json > snyk_issues_temp.json
+              #mv snyk_issues_temp.json snyk_issues.json
+              #snyk fix  # Apply recommended updates
+            #  cd ..
+            #fi
+          #done
+        #continue-on-error: true 
+        #env:
+         # SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      #- name: Upload result to GitHub Code Scanning
+       # uses: github/codeql-action/upload-sarif@v2
+        # sarif_file: snyk.sarif
+      #- name: Upload results to GitHub Code Scanning
+       # uses: github/codeql-action/upload-sarif@v2
+        #with:
+         # sarif_file: snyk-*.sarif
+
+      - name: Set up AWS credentials
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+        run: |
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            aws configure set default.region $AWS_DEFAULT_REGION
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+  
+      - name: Login to AWS ECR
+        run: aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
+          
+      - name: Build and Push Docker Images
+        run: |
+          docker-compose -f lattice_south_to_qcl/docker-compose.yml build
+          docker images
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
+          docker tag lattice_south_to_qcl_api-server-5 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/qarbon-lattice-dev-ecr-01:lattice_south_to_qcl_api-server-5
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/qarbon-lattice-dev-ecr-01:lattice_south_to_qcl_api-server-5
+
+         
+        
+          
+        
+        
+        
+        #for microservice in lattice_north_to_qcl lattice_qcl_handler lattice_qcl_to_north lattice_qcl_to_south lattice_south_to_qcl
+          #do
+           # cd $microservice
+            #docker-compose -f docker-compose.yml build
+            #for tag in $(docker images -q --format "{{.Tag}}" | grep "api-server-")
+            #do
+             # echo "$"
+              #IMAGE_NAME=$microservice-{tag%:*}
+              #echo "Using image: $IMAGE_NAME"
+              #docker tag $IMAGE_NAME ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/qarbon-lattice-dev-ecr-01:$IMAGE_NAME
+              #docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/qarbon-lattice-dev-ecr-01:$IMAGE_NAME
+           # done
+          #docker images 
+          #IMAGE_NAME=$(docker images -q --filter reference=api-server-1 --format "{{.Repository}}:{{.Tag}}")
+          #echo "Using image: $IMAGE_NAME"
+          #docker tag lattice_north_to_qcl_api-server-1 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/qarbon-lattice-dev-ecr-01:lattice_north_to_qcl_api-server-1
+          #docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/qarbon-lattice-dev-ecr-01:lattice_north_to_qcl_api-server-1
+          #cd ..
+          #done
+
+          
+        
+        
+          #docker-compose -f lattice_north_to_qcl/docker-compose.yml build
+          #docker images
+          #aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
+          # docker-compose -f lattice_north_to_qcl/docker-compose.yml push
+          #docker tag lattice_north_to_qcl_api-server-1 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/qarbon-lattice-dev-ecr-01:lattice_north_to_qcl_api-server-1
+          #docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/qarbon-lattice-dev-ecr-01:lattice_north_to_qcl_api-server-1
+          # docker tag redis <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.<YOUR_AWS_REGION>.amazonaws.com/<YOUR_ECR_REPO_NAME>/$service:latest
+
+          # Push Docker image to ECR repository
+          # docker push <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.<YOUR_AWS_REGION>.amazonaws.com/<YOUR_ECR_REPO_NAME>/$service:latest

@@ -1,0 +1,82 @@
+{
+  "type": "crossconnect",
+  "details": [
+    {
+      "qcl_value": "qcl_a_side_patch_panel",
+      "north_value": "custitem_patch_panel_a",
+      "type": "dict1",
+      "refName": true,
+      "key_name": "qcl_a_side_details"
+    },
+    {
+      "qcl_value": "qcl_cc_connection_service",
+      "north_value": "custitem_connection_service",
+      "refName": true,
+      "type": "dict1",
+      "key_name": "qcl_a_side_details"
+    },
+    {
+      "qcl_value": "qcl_cc_media_type",
+      "north_value": "custitem_media_type",
+      "refName": true,
+      "type": "dict1",
+      "key_name": "qcl_a_side_details"
+    },
+    {
+      "qcl_value": "qcl_cc_protocol_type",
+      "north_value": "custitem_protocol_type",
+      "refName": true,
+      "type": "dict1",
+      "key_name": "qcl_a_side_details"
+    },
+    {
+      "qcl_value": "qcl_cc_connector_type",
+      "north_value": "custitem_a_side_connector_type",
+      "refName": true,
+      "type": "dict1",
+      "key_name": "qcl_a_side_details"
+    },
+    {
+      "qcl_value": "qcl_cc_patch_panel_port_a",
+      "north_value": "custitem_patch_panel_a_port_a",
+      "refName": false,
+      "type": "dict1",
+      "key_name": "qcl_a_side_details"
+    },
+    {
+      "qcl_value": "qcl_cc_patch_panel_port_b",
+      "north_value": "custitem_patch_panel_b_port_b",
+      "refName": false,
+      "type": "dict1",
+      "key_name": "qcl_a_side_details"
+    },
+    {
+      "qcl_value": "qcl_z_side_patch_panel_id",
+      "north_value": "custitem_patch_panel_z",
+      "refName": false,
+      "type": "dict1",
+      "key_name": "qcl_z_side_details"
+    },
+    {
+      "qcl_value": "qcl_cc_connector_type",
+      "north_value": "custitem_z_side_connector_type",
+      "refName": true,
+      "type": "dict1",
+      "key_name": "qcl_z_side_details"
+    },
+    {
+      "qcl_value": "qcl_cc_patch_panel_port_a",
+      "north_value": "custitem_patch_panel_z_port_a",
+      "refName": false,
+      "type": "dict1",
+      "key_name": "qcl_z_side_details"
+    },
+    {
+      "qcl_value": "qcl_cc_patch_panel_port_b",
+      "north_value": "custitem_patch_panel_z_port_b",
+      "refName": false,
+      "type": "dict1",
+      "key_name": "qcl_z_side_details"
+    }
+  ]
+}
